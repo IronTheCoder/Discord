@@ -1,0 +1,160 @@
+<section>
+	<canvas id='canvas'></canvas>
+	<form>
+		<h3>Welcome Back!</h3>
+		<p>We're so excited to see you again!</p>
+		<div class="label">Email</div>
+		<input type="text" name="email">
+		<div class="label">password</div>
+		<input type="password" name="password">
+		<button>Login</button>
+	</form>
+</section>
+<script>
+	const BG_IMAGE_URL = 'https://discordapp.com/assets/14c037b7102f18b2d2ccf065a52bb595.jpg'
+const BG_COLOR = '#36393f'
+const POINTS_AMOUNT = 1000
+const WIDTH = 1280
+const HEIGHT = 720
+const RADIUS = 730
+const image = new Image()
+let canvas,
+		ctx,
+		simplex,
+		points = [],
+		dots = [],
+		time = 0,
+		dotsMoveCoef = 0
+		
+
+window.onload = function init() {
+	canvas = document.querySelector('#canvas')
+	canvas.width = WIDTH
+	canvas.height = HEIGHT
+	ctx = canvas.getContext('2d')
+	ctx.shadowColor = 'black'
+	ctx.shadowBlur = 10
+	simplex = new SimplexNoise('noise1')
+
+	image.src = BG_IMAGE_URL
+	
+	document.querySelector('form').addEventListener('submit', e => e.preventDefault())
+	
+  this.addEventListener('mousemove', (e) => {
+    const halfX = window.innerWidth / 2
+		dotsMoveCoef = (e.clientX - halfX) / 100
+  })
+	
+  createPoints()
+	createDots()
+  animate()
+	
+	function createPoints() {
+    for (let i = 0; i < POINTS_AMOUNT; i++) {
+        const point = {
+            x: + Math.cos(i / POINTS_AMOUNT * Math.PI * 2),
+            y: Math.sin(i / POINTS_AMOUNT * Math.PI * 2)
+        }
+        point._x = point.x
+        point._y = point.y
+
+        points.push(point)
+    }
+	}
+
+	function createDots(){
+		for (let i = 0; i < 20; i++){
+			dots.push(new Dot())		
+		}
+	}
+}
+
+function animate() {
+    render()
+    update()
+    requestAnimationFrame(animate)
+
+    function render() {
+      ctx.clearRect(0, 0, WIDTH, HEIGHT);
+      ctx.drawImage(image, 0, 0, WIDTH, HEIGHT)
+      ctx.fillStyle = BG_COLOR
+      ctx.lineCap = 'round';
+      drawShape()
+			drawDots()
+			
+			function drawShape(){
+				ctx.beginPath()
+        ctx.moveTo(points[0].x, points[0].y)
+        for (let i = 1; i < points.length; i++) {
+            ctx.lineTo(points[i].x, points[i].y)
+        }
+        ctx.closePath()
+        ctx.fill()
+			}
+			
+			function drawDots(){
+				dots.forEach(dot => {
+					ctx.beginPath()
+					ctx.arc(dot.x, dot.y, dot.radius, 2 * Math.PI, false)
+					ctx.fillStyle = dot.color
+					ctx.fill()
+				})
+			}
+    }
+
+    function update() {
+			updatePoints()
+      updateDots()
+			
+			function updatePoints(){
+				const coef = 3.2
+				points.forEach(point => {
+					let noise = simplex.noise2D(point._x * coef + time, point._y * coef + time) * 20
+            point.x = point._x * RADIUS + noise
+            point.y = point._y * RADIUS + noise
+				})
+        time += .001
+			}
+			
+			function updateDots(){
+				dots.forEach(dot => {
+					dot.update()
+				})
+			}
+		}
+}
+
+function Dot(){
+	const x = Math.random() * RADIUS
+	
+	return {
+		radius: Math.round(Math.random() * 4),
+		color: '#fff',
+		x: x + dotsMoveCoef,
+		_x: x,
+		y: Math.random() * HEIGHT,
+		speed: -Math.random() * .5,
+		update: function(){
+			this.y += this.speed
+			
+			if(this.y + this.radius < 0){
+				this.y = HEIGHT + 50
+			}
+			
+			const delta = this.x - (this._x + dotsMoveCoef)
+			console.log(delta)
+			if (Math.abs(delta) / 4 > 1){
+				this.x += delta > 0 ? .1 : -.1
+			} else {
+				this.x = this._x + dotsMoveCoef
+			}
+		}
+	}
+}
+
+
+
+document.addEventListener("contextmenu", function(e){
+    e.preventDefault();
+}, false);
+</script>
