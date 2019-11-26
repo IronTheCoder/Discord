@@ -1,18 +1,21 @@
 <head>
 <link rel="stylesheet" type="text/css" href="https://ironthecoder.github.io/Discord/Logincss.css">
 </head>
-<section>
-	<canvas id='canvas'></canvas>
-	<form>
-		<h3>Welcome Back!</h3>
-		<p>We're so excited to see you again!</p>
-		<div class="label">Email</div>
-		<input type="text" name="email">
-		<div class="label">password</div>
-		<input type="password" name="password">
-		<button>Login</button>
-	</form>
-</section>
+<div class="login-container">
+  <div class="login-box">
+    <div class="login-box-content">
+      <h1 class="title">Welcome back!</h1>
+      <h4 class="subtitle">We're so excited to see you again!</h4>
+      <label for="email">Email</label>
+      <input type="text" id="email" autocomplete="off"/>
+      <label for="password">Password</label>
+      <input type="password" id="password"/>
+      <p><a class="register" href="#">Forgot your password?</a></p>
+      <button>Login</button>
+      <p>Need an account? <a class="register" href="#">Register</a></p>
+    </div>
+  </div>
+</div>
 <script>
 	const BG_IMAGE_URL = 'https://discordapp.com/assets/14c037b7102f18b2d2ccf065a52bb595.jpg'
 const BG_COLOR = '#36393f'
